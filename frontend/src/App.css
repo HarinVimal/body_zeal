@@ -1,0 +1,112 @@
+/* =========================
+   DEFAULT CRA STYLES
+   ========================= */
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* =========================
+   HERO SECTION
+   ========================= */
+
+.hero-section {
+  min-height: 100vh;
+  background:
+    linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.75),
+      rgba(0, 0, 0, 0.35)
+    ),
+    url("https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  max-width: 720px;
+  padding: 0 60px;
+}
+
+.hero-title {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.hero-description {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #e5e5e5;
+  margin-bottom: 30px;
+}
+
+/* =========================
+   HERO CTA BUTTONS
+   ========================= */
+
+.hero-cta-group {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cta-main {
+  background: #ff4d4d;
+  color: #ffffff;
+  padding: 14px 28px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.3s ease;
+}
+
+.cta-main:hover {
+  background: #e63b3b;
+}
+
+.cta-secondary {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+}
