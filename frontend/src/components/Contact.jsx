@@ -7,12 +7,10 @@ export default function TrainerInvite() {
   return (
     <>
       <section className="relative bg-black py-32 px-6 overflow-hidden">
-        {/* BACKGROUND GLOW */}
         <div className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-[#e9b21a]/10 blur-[140px]" />
         <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-[#e9b21a]/10 blur-[140px]" />
 
         <div className="relative max-w-6xl mx-auto text-center">
-          {/* HEADING */}
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -24,7 +22,6 @@ export default function TrainerInvite() {
             <span className="text-[#e9b21a]">Bodyzeal Trainer</span>
           </motion.h2>
 
-          {/* SUBTEXT */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -37,7 +34,6 @@ export default function TrainerInvite() {
             professionalism, and results.
           </motion.p>
 
-          {/* FEATURES */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -71,7 +67,6 @@ export default function TrainerInvite() {
             ))}
           </motion.div>
 
-          {/* CTA */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -93,7 +88,6 @@ export default function TrainerInvite() {
         </div>
       </section>
 
-      {/* MODAL */}
       <AnimatePresence>
         {open && <ApplyModal onClose={() => setOpen(false)} />}
       </AnimatePresence>
@@ -101,7 +95,7 @@ export default function TrainerInvite() {
   );
 }
 
-/* ================= MODAL FORM ================= */
+/* ================= MODAL FORM WITH VALIDATION ================= */
 
 function ApplyModal({ onClose }) {
   const [form, setForm] = useState({
@@ -113,13 +107,73 @@ function ApplyModal({ onClose }) {
     message: "",
   });
 
+  const [errors, setErrors] = useState({});
   const [status, setStatus] = useState("");
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
+  const validate = () => {
+    let newErrors = {};
+
+    // NAME VALIDATION (NO NUMBERS)
+    if (!form.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (/\d/.test(form.name)) {
+      newErrors.name = "Name should not contain numbers";
+    }
+
+    // EMAIL VALIDATION
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!form.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailPattern.test(form.email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    // PHONE VALIDATION (EXACTLY 10 DIGITS)
+    const phonePattern = /^\d{10}$/;
+    if (!form.phone) {
+      newErrors.phone = "Phone number is required";
+    } else if (!phonePattern.test(form.phone)) {
+      newErrors.phone = "Phone must be exactly 10 digits";
+    }
+
+    // EXPERIENCE VALIDATION (ONLY NUMBER)
+    if (!form.experience) {
+      newErrors.experience = "Experience is required";
+    } else if (!/^\d+$/.test(form.experience)) {
+      newErrors.experience = "Experience must be a number";
+    } else if (Number(form.experience) > 50) {
+      newErrors.experience = "Experience cannot exceed 50 years";
+    }
+
+    // SPECIALIZATION VALIDATION
+    if (!form.specialization.trim()) {
+      newErrors.specialization = "Specialization is required";
+    } else if (form.specialization.length < 3) {
+      newErrors.specialization = "Specialization is too short";
+    }
+
+    // MESSAGE VALIDATION
+    if (!form.message.trim()) {
+      newErrors.message = "Message is required";
+    } else if (form.message.length < 20) {
+      newErrors.message = "Message must be at least 20 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validate()) {
+      setStatus("Fix the errors before submitting ❌");
+      return;
+    }
+
     setStatus("Submitting...");
 
     try {
@@ -139,6 +193,7 @@ function ApplyModal({ onClose }) {
           specialization: "",
           message: "",
         });
+        setErrors({});
       } else {
         setStatus("Something went wrong ❌");
       }
@@ -162,7 +217,6 @@ function ApplyModal({ onClose }) {
         onSubmit={handleSubmit}
         className="relative w-full max-w-xl bg-[#0b0b0b] border border-white/10 rounded-3xl p-8"
       >
-        {/* CLOSE */}
         <button
           type="button"
           onClick={onClose}
@@ -183,26 +237,33 @@ function ApplyModal({ onClose }) {
             ["experience", "Years of Experience"],
             ["specialization", "Specialization"],
           ].map(([name, placeholder]) => (
-            <input
-              key={name}
-              name={name}
-              placeholder={placeholder}
-              value={form[name]}
-              onChange={handleChange}
-              required
-              className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none"
-            />
+            <div key={name}>
+              <input
+                name={name}
+                placeholder={placeholder}
+                value={form[name]}
+                onChange={handleChange}
+                className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none"
+              />
+              {errors[name] && (
+                <p className="text-red-400 text-xs mt-1">{errors[name]}</p>
+              )}
+            </div>
           ))}
 
-          <textarea
-            name="message"
-            rows="4"
-            placeholder="Tell us about your certifications & mindset"
-            value={form.message}
-            onChange={handleChange}
-            required
-            className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none resize-none"
-          />
+          <div>
+            <textarea
+              name="message"
+              rows="4"
+              placeholder="Tell us about your certifications & mindset"
+              value={form.message}
+              onChange={handleChange}
+              className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none resize-none"
+            />
+            {errors.message && (
+              <p className="text-red-400 text-xs mt-1">{errors.message}</p>
+            )}
+          </div>
         </div>
 
         <button

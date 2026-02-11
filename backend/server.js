@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
@@ -10,7 +12,10 @@ const app = express();
 // ================== MIDDLEWARE ==================
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: [
+      process.env.CLIENT_ORIGIN_1 || "http://localhost:3000",
+      process.env.CLIENT_ORIGIN_2 || "http://localhost:3001",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
@@ -29,10 +34,11 @@ app.use("/uploads", express.static(uploadDir));
 
 // ================== DB ==================
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "jaganathan@123",
-  database: "bodyzeal",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
 });
 
 db.connect((err) => {
@@ -64,19 +70,16 @@ app.post("/upload", upload.single("image"), (req, res) => {
 app.get("/admin/stats", (req, res) => {
   const stats = {};
 
-  db.query(
-    "SELECT COUNT(*) AS total FROM reviews",
-    (err, r1) => {
-      if (err) return res.status(500).json({ error: "DB error" });
-      stats.totalReviews = r1[0].total;
+  db.query("SELECT COUNT(*) AS total FROM reviews", (err, r1) => {
+    if (err) return res.status(500).json({ error: "DB error" });
+    stats.totalReviews = r1[0].total;
 
-      db.query("SELECT COUNT(*) AS total FROM gallery", (err2, r2) => {
-        if (err2) return res.status(500).json({ error: "DB error" });
-        stats.images = r2[0].total;
-        res.json(stats);
-      });
-    }
-  );
+    db.query("SELECT COUNT(*) AS total FROM gallery", (err2, r2) => {
+      if (err2) return res.status(500).json({ error: "DB error" });
+      stats.images = r2[0].total;
+      res.json(stats);
+    });
+  });
 });
 
 /* =================================================
@@ -275,7 +278,9 @@ app.get("/membership", (req, res) => {
 
     const data = {};
     rows.forEach((row) => {
-      const memberships = Array.isArray(row.memberships) ? row.memberships : [];
+      const memberships = Array.isArray(row.memberships)
+        ? row.memberships
+        : [];
       const addons = Array.isArray(row.addons) ? row.addons : [];
       data[row.branch] = { memberships, addons };
     });
@@ -397,7 +402,8 @@ app.post("/admin/programs", (req, res) => {
 
       const programId = result.insertId;
 
-      if (branches.length === 0) return res.json({ success: true, id: programId });
+      if (branches.length === 0)
+        return res.json({ success: true, id: programId });
 
       const values = branches.map((b) => [
         programId,
@@ -410,7 +416,8 @@ app.post("/admin/programs", (req, res) => {
         "INSERT INTO program_branches (program_id, branch_name, img, detailed_text) VALUES ?",
         [values],
         (err2) => {
-          if (err2) return res.status(500).json({ error: "Insert branches failed" });
+          if (err2)
+            return res.status(500).json({ error: "Insert branches failed" });
           res.json({ success: true, id: programId });
         }
       );
@@ -431,29 +438,40 @@ app.put("/admin/programs/:id", (req, res) => {
     "UPDATE programs SET title=?, img=?, short_text=? WHERE id=?",
     [title, img || null, short_text || null, programId],
     (err) => {
-      if (err) return res.status(500).json({ error: "Update program failed" });
+      if (err)
+        return res.status(500).json({ error: "Update program failed" });
 
-      db.query("DELETE FROM program_branches WHERE program_id=?", [programId], (err2) => {
-        if (err2) return res.status(500).json({ error: "Delete old branches failed" });
+      db.query(
+        "DELETE FROM program_branches WHERE program_id=?",
+        [programId],
+        (err2) => {
+          if (err2)
+            return res
+              .status(500)
+              .json({ error: "Delete old branches failed" });
 
-        if (branches.length === 0) return res.json({ success: true });
+          if (branches.length === 0) return res.json({ success: true });
 
-        const values = branches.map((b) => [
-          programId,
-          b.branch_name,
-          b.img || null,
-          b.detailed_text || null,
-        ]);
+          const values = branches.map((b) => [
+            programId,
+            b.branch_name,
+            b.img || null,
+            b.detailed_text || null,
+          ]);
 
-        db.query(
-          "INSERT INTO program_branches (program_id, branch_name, img, detailed_text) VALUES ?",
-          [values],
-          (err3) => {
-            if (err3) return res.status(500).json({ error: "Insert updated branches failed" });
-            res.json({ success: true });
-          }
-        );
-      });
+          db.query(
+            "INSERT INTO program_branches (program_id, branch_name, img, detailed_text) VALUES ?",
+            [values],
+            (err3) => {
+              if (err3)
+                return res
+                  .status(500)
+                  .json({ error: "Insert updated branches failed" });
+              res.json({ success: true });
+            }
+          );
+        }
+      );
     }
   );
 });
@@ -467,13 +485,14 @@ app.delete("/admin/programs/:id", (req, res) => {
     res.json({ success: true });
   });
 });
-/*=================To add new Branch====================*/
+
 // ADD A NEW BRANCH TO AN EXISTING PROGRAM
 app.post("/admin/programs/:id/branch", (req, res) => {
   const programId = req.params.id;
   const { branch_name, img, detailed_text } = req.body;
 
-  if (!branch_name) return res.status(400).json({ error: "Branch name required" });
+  if (!branch_name)
+    return res.status(400).json({ error: "Branch name required" });
 
   db.query(
     "INSERT INTO program_branches (program_id, branch_name, img, detailed_text) VALUES (?, ?, ?, ?)",
@@ -488,8 +507,6 @@ app.post("/admin/programs/:id/branch", (req, res) => {
   );
 });
 
-
-/*===========================trainer Contact========*/
 // ================= TRAINER APPLICATION =================
 app.post("/api/trainers/apply", (req, res) => {
   const {
@@ -501,7 +518,14 @@ app.post("/api/trainers/apply", (req, res) => {
     message,
   } = req.body;
 
-  if (!name || !email || !phone || !experience || !specialization || !message) {
+  if (
+    !name ||
+    !email ||
+    !phone ||
+    !experience ||
+    !specialization ||
+    !message
+  ) {
     return res.status(400).json({ message: "All fields are required" });
   }
 
@@ -527,8 +551,8 @@ app.post("/api/trainers/apply", (req, res) => {
     }
   );
 });
-/*===========adminside Trainer applications=================*/
-/* ================= ADMIN: GET ALL TRAINER APPLICATIONS ================= */
+
+// ADMIN: GET ALL TRAINER APPLICATIONS
 app.get("/admin/trainers", (req, res) => {
   const sql = `
     SELECT id, name, email, phone, experience, specialization, message, status, created_at
@@ -545,10 +569,10 @@ app.get("/admin/trainers", (req, res) => {
   });
 });
 
-/* ================= ADMIN: UPDATE STATUS (OPTIONAL) ================= */
+// ADMIN: UPDATE STATUS
 app.put("/admin/trainers/:id/status", (req, res) => {
   const trainerId = req.params.id;
-  const { status } = req.body; // 'pending', 'reviewed', 'approved', 'rejected'
+  const { status } = req.body;
 
   const validStatus = ["pending", "reviewed", "approved", "rejected"];
   if (!validStatus.includes(status)) {
@@ -565,11 +589,9 @@ app.put("/admin/trainers/:id/status", (req, res) => {
   );
 });
 
+// ================= SERVER ========================
+const PORT = process.env.PORT || 5001;
 
-/* =================================================
-   ================= SERVER ========================
-   ================================================= */
-const PORT = 5001;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
