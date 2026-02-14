@@ -179,6 +179,31 @@ app.post("/admin/gallery", upload.single("image"), (req, res) => {
   );
 });
 
+// DELETE GALLERY IMAGE
+app.delete("/admin/gallery/:id", (req, res) => {
+  const imageId = req.params.id;
+
+  db.query("SELECT image_url FROM gallery WHERE id=?", [imageId], (err, rows) => {
+    if (err) return res.status(500).json({ error: "DB error" });
+    if (rows.length === 0)
+      return res.status(404).json({ error: "Image not found" });
+
+    const imagePath = path.join(__dirname, rows[0].image_url);
+
+    db.query("DELETE FROM gallery WHERE id=?", [imageId], (err2) => {
+      if (err2)
+        return res.status(500).json({ error: "Delete failed" });
+
+      // Delete file from uploads folder
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+
+      res.json({ success: true });
+    });
+  });
+});
+
 /* =================================================
    ================= USER CONTACT ==================
    ================================================= */
@@ -485,6 +510,24 @@ app.delete("/admin/programs/:id", (req, res) => {
     res.json({ success: true });
   });
 });
+// DELETE SINGLE BRANCH
+app.delete("/admin/programs/branch/:id", (req, res) => {
+  const branchId = req.params.id;
+
+  db.query(
+    "DELETE FROM program_branches WHERE id=?",
+    [branchId],
+    (err) => {
+      if (err) {
+        console.error("Delete branch error:", err);
+        return res.status(500).json({ error: "Delete branch failed" });
+      }
+
+      res.json({ success: true });
+    }
+  );
+});
+
 
 // ADD A NEW BRANCH TO AN EXISTING PROGRAM
 app.post("/admin/programs/:id/branch", (req, res) => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 
 const branches = ["Nava India", "RS Puram", "Kovaipudur"];
@@ -10,12 +10,13 @@ export default function Gallery() {
   const [loading, setLoading] = useState(true);
   const [viewMore, setViewMore] = useState(false);
 
-  // ✅ Scroll to top on page load (important for navigation UX)
+  // ✅ Scroll to top on page load
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  useEffect(() => {
+  // ✅ Fetch images function (reusable)
+  const fetchImages = useCallback(() => {
     setLoading(true);
     setViewMore(false);
 
@@ -36,15 +37,34 @@ export default function Gallery() {
       .finally(() => setLoading(false));
   }, [branch]);
 
+  // ✅ Fetch on branch change
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  // ✅ AUTO REFRESH every 5 seconds (so deleted images disappear instantly)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchImages();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [fetchImages]);
+
+  // ✅ Download image
   const downloadImage = async (url) => {
-    const res = await fetch(url);
-    const blob = await res.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "bodyzeal-gallery.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "bodyzeal-gallery.jpg";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error("Download failed:", err);
+    }
   };
 
   const visibleImages = viewMore
@@ -80,6 +100,13 @@ export default function Gallery() {
           <p className="text-center text-gray-400">Loading images...</p>
         )}
 
+        {/* NO IMAGES */}
+        {!loading && images.length === 0 && (
+          <p className="text-center text-gray-500">
+            No images available for this branch.
+          </p>
+        )}
+
         {/* GRID */}
         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
           {visibleImages.map((img) => (
@@ -92,6 +119,10 @@ export default function Gallery() {
                 src={`http://localhost:5001${img.image_url}`}
                 alt="Gallery"
                 className="w-full h-72 object-cover"
+                onError={(e) => {
+                  // ✅ If image was deleted physically from server
+                  e.target.style.display = "none";
+                }}
               />
 
               <button

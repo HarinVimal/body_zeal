@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { FaTrash } from "react-icons/fa";
 
 const branches = ["Nava India", "RS Puram", "Kovaipudur"];
 
@@ -51,7 +52,6 @@ export default function AdminGallery() {
         setSuccess("Image uploaded successfully");
         setPreview(null);
         fileRef.current.value = "";
-
         setTimeout(() => setSuccess(""), 2000);
       } else {
         setError(data.error || "Upload failed");
@@ -64,6 +64,28 @@ export default function AdminGallery() {
 
     setLoading(false);
   };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this image?"))
+      return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5001/admin/gallery/${id}`,
+        { method: "DELETE" }
+      );
+
+      if (res.ok) {
+        setImages((prev) => prev.filter((img) => img.id !== id));
+      } else {
+        alert("Delete failed");
+      }
+    } catch {
+      alert("Server error");
+    }
+  };
+
+  const filteredImages = images.filter((img) => img.branch === branch);
 
   return (
     <div className="min-h-screen bg-black p-10 text-white">
@@ -133,12 +155,45 @@ export default function AdminGallery() {
           {loading ? "Uploading..." : "Upload Image"}
         </button>
 
-        {/* STATUS MESSAGES */}
         {success && (
           <p className="mt-4 text-green-400 text-center">{success}</p>
         )}
         {error && (
           <p className="mt-4 text-red-400 text-center">{error}</p>
+        )}
+      </div>
+
+      {/* IMAGE DISPLAY SECTION */}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-yellow-400 mb-6">
+          Uploaded Images ({branch})
+        </h2>
+
+        {filteredImages.length === 0 ? (
+          <p className="text-gray-400">No images available.</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {filteredImages.map((img) => (
+              <div
+                key={img.id}
+                className="relative group rounded-2xl overflow-hidden border border-white/10"
+              >
+                <img
+                  src={`http://localhost:5001${img.image_url}`}
+                  alt="gallery"
+                  className="w-full h-64 object-cover"
+                />
+
+                {/* DELETE ICON */}
+                <button
+                  onClick={() => handleDelete(img.id)}
+                  className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition"
+                >
+                  <FaTrash size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
