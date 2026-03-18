@@ -4,18 +4,23 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1517836357463-d25dfeac3438";
 
+/* ----------- NEW: BRANCH OPTIONS ----------- */
+const BRANCH_OPTIONS = ["Nava India", "RS Puram", "Kovaipudur"];
+
 export default function AdminPrograms() {
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeProgram, setActiveProgram] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  /* ----------- NEW: selected branch dropdown ----------- */
+  const [selectedBranch, setSelectedBranch] = useState("");
+
   // ================= FETCH PROGRAMS =================
   const fetchPrograms = async () => {
     setLoading(true);
     try {
       const res = await axios.get("http://localhost:5001/api/programs-with-branches");
-      // backend should return: [{ id, title, img, short_text, branches: [{id, branch_name, img, detailed_text}] }]
       if (Array.isArray(res.data)) setPrograms(res.data);
       else setPrograms([]);
     } catch (err) {
@@ -38,19 +43,18 @@ export default function AdminPrograms() {
       const res = await axios.post("http://localhost:5001/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const imageUrl = res.data.url;
+      const imageUrl = `http://localhost:5001${res.data.url}`;
 
       if (programKey === "img") {
         setActiveProgram((prev) => ({ ...prev, img: imageUrl }));
       } else {
-        // programKey format: branchId.img
-        const [branchId] = programKey.split(".");
-        setActiveProgram((prev) => ({
-          ...prev,
-          branches: prev.branches.map((b) =>
-            b.id === branchId ? { ...b, img: imageUrl } : b
-          ),
-        }));
+       const [branchId] = programKey.split(".");
+     setActiveProgram((prev) => ({
+  ...prev,
+  branches: prev.branches.map((b) =>
+    String(b.id) === branchId ? { ...b, img: imageUrl } : b
+  ),
+}));
       }
     } catch (err) {
       console.error(err);
@@ -107,16 +111,19 @@ export default function AdminPrograms() {
     }));
   };
 
+  /* ----------- UPDATED ADD BRANCH ----------- */
   const addBranch = async () => {
-    const branchName = prompt("Enter branch name");
-    if (!branchName) return;
+    if (!selectedBranch) return alert("Please select a branch");
 
-    const newBranch = { branch_name: branchName, img: "", detailed_text: "" };
+    const newBranch = { branch_name: selectedBranch, img: "", detailed_text: "" };
 
     if (isEditing) {
-      // Save immediately in DB to get an ID
       try {
-        const res = await axios.post(`http://localhost:5001/admin/programs/${activeProgram.id}/branch`, newBranch);
+        const res = await axios.post(
+          `http://localhost:5001/admin/programs/${activeProgram.id}/branch`,
+          newBranch
+        );
+
         setActiveProgram((prev) => ({
           ...prev,
           branches: [...prev.branches, { ...newBranch, id: res.data.id }],
@@ -126,12 +133,13 @@ export default function AdminPrograms() {
         alert("Failed to add branch");
       }
     } else {
-      // Just add locally
       setActiveProgram((prev) => ({
         ...prev,
         branches: [...(prev.branches || []), { ...newBranch }],
       }));
     }
+
+    setSelectedBranch("");
   };
 
   const removeBranch = async (branchId) => {
@@ -189,9 +197,12 @@ export default function AdminPrograms() {
               <div className="p-4 flex flex-col">
                 <h3 className="text-xl font-semibold text-yellow-400">{p.title}</h3>
                 <p className="text-gray-400 text-sm mt-2 flex-1">{p.short_text}</p>
+
                 {p.branches && p.branches.length > 0 && (
                   <>
-                    <h4 className="text-yellow-400 font-semibold mt-2 mb-1">Branches:</h4>
+                    <h4 className="text-yellow-400 font-semibold mt-2 mb-1">
+                      Branches:
+                    </h4>
                     <ul className="text-gray-300 text-sm">
                       {p.branches.map((b) => (
                         <li key={b.id || b.branch_name}>{b.branch_name}</li>
@@ -199,6 +210,7 @@ export default function AdminPrograms() {
                     </ul>
                   </>
                 )}
+
                 <div className="flex mt-4 gap-2">
                   <button
                     onClick={() => {
@@ -209,6 +221,7 @@ export default function AdminPrograms() {
                   >
                     Edit
                   </button>
+
                   <button
                     onClick={() => deleteProgram(p.id)}
                     className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
@@ -251,7 +264,6 @@ export default function AdminPrograms() {
                 {isEditing ? "Edit Program" : "Add Program"}
               </h3>
 
-              {/* Title */}
               <input
                 type="text"
                 placeholder="Title"
@@ -262,9 +274,9 @@ export default function AdminPrograms() {
                 className="w-full mb-3 p-2 rounded border border-white/20 bg-black text-white"
               />
 
-              {/* Program Image Upload */}
               <div className="mb-3">
                 <label className="text-gray-300 mb-1 block">Program Image</label>
+
                 {activeProgram.img && (
                   <img
                     src={activeProgram.img}
@@ -272,6 +284,7 @@ export default function AdminPrograms() {
                     alt="program"
                   />
                 )}
+
                 <input
                   type="file"
                   onChange={(e) => handleImageUpload(e.target.files[0], "img")}
@@ -279,24 +292,54 @@ export default function AdminPrograms() {
                 />
               </div>
 
-              {/* Short description */}
               <textarea
                 placeholder="Short Description"
                 value={activeProgram.short_text}
                 onChange={(e) =>
-                  setActiveProgram({ ...activeProgram, short_text: e.target.value })
+                  setActiveProgram({
+                    ...activeProgram,
+                    short_text: e.target.value,
+                  })
                 }
                 className="w-full mb-3 p-2 rounded border border-white/20 bg-black text-white"
               />
 
-              {/* Branches */}
+              {/* ----------- BRANCH DROPDOWN ----------- */}
+
               <div className="mb-3">
                 <h4 className="text-yellow-400 font-semibold mb-2">Branches</h4>
+
+                <select
+                  value={selectedBranch}
+                  onChange={(e) => setSelectedBranch(e.target.value)}
+                  className="w-full mb-2 p-2 rounded border border-white/20 bg-black text-white"
+                >
+                  <option value="">Select Branch</option>
+                  {BRANCH_OPTIONS.map((branch) => (
+                    <option key={branch} value={branch}>
+                      {branch}
+                    </option>
+                  ))}
+                </select>
+
+                <button
+                  onClick={addBranch}
+                  className="px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-500 transition mb-3"
+                >
+                  Add Branch
+                </button>
+
                 {activeProgram.branches &&
                   activeProgram.branches.map((b) => (
-                    <div key={b.id || b.branch_name} className="mb-2 border border-white/10 p-2 rounded">
+                    <div
+                      key={b.id || b.branch_name}
+                      className="mb-2 border border-white/10 p-2 rounded"
+                    >
                       <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold text-white">{b.branch_name}</span>
+                        <span className="font-semibold text-white">
+                          {b.branch_name}
+                        </span>
+
                         <button
                           onClick={() => removeBranch(b.id)}
                           className="text-red-500 hover:text-red-700"
@@ -305,7 +348,6 @@ export default function AdminPrograms() {
                         </button>
                       </div>
 
-                      {/* Branch Image */}
                       {b.img && (
                         <img
                           src={b.img}
@@ -313,27 +355,29 @@ export default function AdminPrograms() {
                           alt={b.branch_name}
                         />
                       )}
+
                       <input
                         type="file"
-                        onChange={(e) => handleImageUpload(e.target.files[0], `${b.id}.img`)}
+                        onChange={(e) =>
+                          handleImageUpload(e.target.files[0], `${b.id}.img`)
+                        }
                         className="w-full mb-1 p-1 rounded border border-white/20 bg-black text-white"
                       />
 
-                      {/* Branch Description */}
                       <textarea
                         placeholder="Branch Description"
                         value={b.detailed_text}
-                        onChange={(e) => handleBranchChange(b.id, "detailed_text", e.target.value)}
+                        onChange={(e) =>
+                          handleBranchChange(
+                            b.id,
+                            "detailed_text",
+                            e.target.value
+                          )
+                        }
                         className="w-full p-1 rounded border border-white/20 bg-black text-white"
                       />
                     </div>
                   ))}
-                <button
-                  onClick={addBranch}
-                  className="px-4 py-2 rounded-full bg-yellow-400 text-black font-semibold hover:bg-yellow-500 transition mt-2"
-                >
-                  Add Branch
-                </button>
               </div>
 
               <button

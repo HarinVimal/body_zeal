@@ -57,7 +57,7 @@ export default function TrainerInvite() {
             ].map((item, i) => (
               <div
                 key={i}
-                className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl"
+                className="bg-[#171717] border border-white/10 rounded-2xl p-6 shadow-lg"
               >
                 <h4 className="text-lg font-semibold text-[#e9b21a]">
                   {item.title}
@@ -116,14 +116,12 @@ function ApplyModal({ onClose }) {
   const validate = () => {
     let newErrors = {};
 
-    // NAME VALIDATION (NO NUMBERS)
     if (!form.name.trim()) {
       newErrors.name = "Name is required";
     } else if (/\d/.test(form.name)) {
       newErrors.name = "Name should not contain numbers";
     }
 
-    // EMAIL VALIDATION
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!form.email) {
       newErrors.email = "Email is required";
@@ -131,7 +129,6 @@ function ApplyModal({ onClose }) {
       newErrors.email = "Enter a valid email address";
     }
 
-    // PHONE VALIDATION (EXACTLY 10 DIGITS)
     const phonePattern = /^\d{10}$/;
     if (!form.phone) {
       newErrors.phone = "Phone number is required";
@@ -139,7 +136,6 @@ function ApplyModal({ onClose }) {
       newErrors.phone = "Phone must be exactly 10 digits";
     }
 
-    // EXPERIENCE VALIDATION (ONLY NUMBER)
     if (!form.experience) {
       newErrors.experience = "Experience is required";
     } else if (!/^\d+$/.test(form.experience)) {
@@ -148,14 +144,12 @@ function ApplyModal({ onClose }) {
       newErrors.experience = "Experience cannot exceed 50 years";
     }
 
-    // SPECIALIZATION VALIDATION
     if (!form.specialization.trim()) {
       newErrors.specialization = "Specialization is required";
     } else if (form.specialization.length < 3) {
       newErrors.specialization = "Specialization is too short";
     }
 
-    // MESSAGE VALIDATION
     if (!form.message.trim()) {
       newErrors.message = "Message is required";
     } else if (form.message.length < 20) {
@@ -184,7 +178,8 @@ function ApplyModal({ onClose }) {
       });
 
       if (res.ok) {
-        setStatus("Application submitted successfully ✅");
+        setStatus("Application submitted successfully !");
+
         setForm({
           name: "",
           email: "",
@@ -193,7 +188,13 @@ function ApplyModal({ onClose }) {
           specialization: "",
           message: "",
         });
+
         setErrors({});
+
+        // AUTO CLOSE MODAL AFTER SUCCESS
+        setTimeout(() => {
+          onClose();
+        }, 1500);
       } else {
         setStatus("Something went wrong ❌");
       }
@@ -207,7 +208,7 @@ function ApplyModal({ onClose }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center px-4"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center px-4"
     >
       <motion.form
         initial={{ scale: 0.9, opacity: 0 }}
@@ -215,7 +216,7 @@ function ApplyModal({ onClose }) {
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ duration: 0.3 }}
         onSubmit={handleSubmit}
-        className="relative w-full max-w-xl bg-[#0b0b0b] border border-white/10 rounded-3xl p-8"
+        className="relative w-full max-w-xl bg-[#171717] border border-white/10 rounded-3xl p-8 shadow-xl"
       >
         <button
           type="button"
@@ -243,7 +244,7 @@ function ApplyModal({ onClose }) {
                 placeholder={placeholder}
                 value={form[name]}
                 onChange={handleChange}
-                className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none"
+                className="w-full bg-[#0f0f0f] border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none"
               />
               {errors[name] && (
                 <p className="text-red-400 text-xs mt-1">{errors[name]}</p>
@@ -258,7 +259,7 @@ function ApplyModal({ onClose }) {
               placeholder="Tell us about your certifications & mindset"
               value={form.message}
               onChange={handleChange}
-              className="w-full bg-black border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none resize-none"
+              className="w-full bg-[#0f0f0f] border border-white/15 rounded-xl px-4 py-3 focus:border-[#e9b21a] outline-none resize-none"
             />
             {errors.message && (
               <p className="text-red-400 text-xs mt-1">{errors.message}</p>

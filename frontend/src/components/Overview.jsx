@@ -36,13 +36,13 @@ export default function Overview() {
         </motion.div>
 
         {/* RIGHT FLOATING IMAGE CARDS */}
-        <div className="relative h-[420px]">
+        <div className="relative h-[320px] sm:h-[380px] md:h-[420px]">
 
           {/* Card 1 */}
           <motion.img
             src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80"
             alt="Gym Interior"
-            className="absolute top-0 left-8 w-56 h-72 object-cover rounded-xl shadow-xl"
+            className="absolute top-0 left-4 sm:left-8 w-44 sm:w-52 md:w-56 h-60 sm:h-68 md:h-72 object-cover rounded-xl shadow-xl"
             animate={{ y: [0, -12, 0] }}
             transition={{ duration: 6, repeat: Infinity }}
           />
@@ -51,16 +51,16 @@ export default function Overview() {
           <motion.img
             src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=800&q=80"
             alt="Workout Floor"
-            className="absolute top-20 right-0 w-64 h-80 object-cover rounded-xl shadow-2xl"
+            className="absolute top-16 sm:top-20 right-0 w-52 sm:w-60 md:w-64 h-72 sm:h-76 md:h-80 object-cover rounded-xl shadow-2xl"
             animate={{ y: [0, 14, 0] }}
             transition={{ duration: 7, repeat: Infinity }}
           />
 
-          {/* Card 3 */}
+          {/* Card 3 (HIDDEN IN MOBILE) */}
           <motion.img
             src="https://images.unsplash.com/photo-1554284126-aa88f22d8b74?auto=format&fit=crop&w=800&q=80"
             alt="Equipment"
-            className="absolute bottom-0 left-24 w-52 h-64 object-cover rounded-xl shadow-lg"
+            className="hidden md:block absolute bottom-0 left-20 md:left-24 w-48 md:w-52 h-60 md:h-64 object-cover rounded-xl shadow-lg"
             animate={{ y: [0, -10, 0] }}
             transition={{ duration: 5, repeat: Infinity }}
           />

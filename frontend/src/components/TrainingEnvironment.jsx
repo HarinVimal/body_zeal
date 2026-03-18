@@ -1,30 +1,36 @@
 import { motion } from "framer-motion";
 
+/* UPDATED CARDS WITH NEW CONTENT + BETTER IMAGES */
 const cards = [
   {
-    title: "Gym Interior",
-    caption: "Clean interiors designed for focused training",
-    img: "https://images.unsplash.com/photo-1554284126-aa88f22d8b74",
+    title: "Training Environment",
+    caption: "Well-designed space that enhances focus and performance",
+    img: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61",
   },
   {
-    title: "Training Zones",
-    caption: "Professional-grade equipment for structured workouts",
-    img: "https://images.unsplash.com/photo-1593079831268-3381b0db4a77",
+    title: "Clean Ambience",
+    caption: "Hygienic and well-maintained workout surroundings",
+    img: "https://images.unsplash.com/photo-1571902943202-507ec2618e8f",
   },
   {
-    title: "Workout Floor",
-    caption: "Spacious layouts supporting safe and efficient movement",
+    title: "Certified Trainers",
+    caption: "Guidance from experienced and qualified professionals",
+    img: "https://images.unsplash.com/photo-1605296867424-35fc25c9212a",
+  },
+  {
+    title: "New Age Equipment",
+    caption: "Modern machines designed for safe and effective training",
     img: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438",
   },
   {
-    title: "Cleanliness & Ambience",
-    caption: "Well-maintained spaces promoting comfort and consistency",
-    img: "https://images.unsplash.com/photo-1546483875-ad9014c88eba",
+    title: "Air Conditioned Workout Zone",
+    caption: "Comfortable climate-controlled training environment",
+    img: "https://images.unsplash.com/photo-1599058917212-d750089bc07e",
   },
 ];
 
-// duplicate once (this is enough)
-const infiniteCards = [...cards, ...cards];
+/* DUPLICATE MORE TIMES FOR PERFECT LOOP (NO BREAK) */
+const infiniteCards = [...cards, ...cards, ...cards, ...cards];
 
 export default function TrainingEnvironment() {
   return (
@@ -41,10 +47,10 @@ export default function TrainingEnvironment() {
       {/* SLIDER */}
       <div className="relative w-full overflow-hidden">
         <motion.div
-          className="flex gap-10"
-          animate={{ x: [0, -1280] }}
+          className="flex gap-10 w-max"
+          animate={{ x: ["0%", "-50%"] }}
           transition={{
-            duration: 18,
+            duration: 25,
             ease: "linear",
             repeat: Infinity,
           }}
@@ -52,7 +58,7 @@ export default function TrainingEnvironment() {
           {infiniteCards.map((item, i) => (
             <div
               key={i}
-              className="relative min-w-[280px] h-[360px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
+              className="relative min-w-[260px] sm:min-w-[280px] h-[340px] sm:h-[360px] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
             >
               <img
                 src={`${item.img}?auto=format&fit=crop&w=800&q=80`}
@@ -60,8 +66,10 @@ export default function TrainingEnvironment() {
                 className="absolute inset-0 w-full h-full object-cover"
               />
 
+              {/* DARK OVERLAY */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
+              {/* TEXT */}
               <div className="absolute bottom-0 p-5">
                 <h4 className="text-lg font-semibold">{item.title}</h4>
                 <p className="text-sm text-gray-300 mt-1">

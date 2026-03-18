@@ -122,12 +122,7 @@ export default function TrainersApply() {
               >
                 Approve
               </button>
-              <button
-                onClick={() => updateStatus(app.id, "pending")}
-                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-500 rounded text-sm font-medium transition"
-              >
-                Pending
-              </button>
+            
               <button
                 onClick={() => updateStatus(app.id, "rejected")}
                 className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-sm font-medium transition"

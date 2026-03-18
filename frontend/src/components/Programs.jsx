@@ -76,7 +76,7 @@ export default function Programs() {
                   key={p.id}
                   whileHover={{ y: -8 }}
                   transition={{ duration: 0.3 }}
-                  className="rounded-2xl overflow-hidden border border-white/10 bg-black shadow-xl"
+                  className="rounded-2xl overflow-hidden border border-white/10 bg-[#111] shadow-xl"
                 >
                   <img
                     src={p.img || FALLBACK_IMAGE}
@@ -122,12 +122,13 @@ export default function Programs() {
       <AnimatePresence>
         {active && (
           <motion.div
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl overflow-y-auto px-6 py-16"
+            className="fixed inset-0 z-50 bg-[#0f0f0f] backdrop-blur-md overflow-y-auto px-6 py-16"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <div className="max-w-6xl mx-auto">
+
               <button
                 onClick={() => setActive(null)}
                 className="mb-8 text-gray-400 hover:text-white"
@@ -139,7 +140,7 @@ export default function Programs() {
 
               {/* ================= BRANCH FILTER ================= */}
               {branchNames.length > 0 && (
-                <div className="flex flex-wrap gap-4 mb-8">
+                <div className="flex flex-wrap gap-4 mb-10">
                   {branchNames.map((bName) => (
                     <button
                       key={bName}
@@ -168,7 +169,7 @@ export default function Programs() {
                     initial={{ opacity: 0, y: 40 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.15 }}
-                    className="rounded-2xl overflow-hidden border border-white/10 bg-black"
+                    className="rounded-2xl overflow-hidden border border-white/10 bg-[#171717] shadow-lg hover:shadow-2xl transition"
                   >
                     <img
                       src={b.img || FALLBACK_IMAGE}
@@ -176,10 +177,12 @@ export default function Programs() {
                       alt={b.branch_name}
                       className="h-56 w-full object-cover"
                     />
+
                     <div className="p-6">
                       <h4 className="text-xl font-semibold mb-3 text-[#e9b21a]">
                         {b.branch_name}
                       </h4>
+
                       <p className="text-sm text-gray-400 leading-relaxed">
                         {b.detailed_text}
                       </p>
@@ -187,6 +190,7 @@ export default function Programs() {
                   </motion.div>
                 ))}
               </div>
+
             </div>
           </motion.div>
         )}

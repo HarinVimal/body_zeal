@@ -49,6 +49,7 @@ export default function Review() {
           <h2 className="text-4xl md:text-5xl font-bold">
             Share Your <span className="text-[#e9b21a]">Experience</span>
           </h2>
+
           <p className="mt-4 text-gray-400">
             Your feedback helps us grow stronger 💪
           </p>
@@ -61,13 +62,13 @@ export default function Review() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="bg-gradient-to-br from-black to-[#0f0f0f] border border-white/10 rounded-3xl p-10 shadow-2xl"
+          className="bg-[#171717] border border-white/10 rounded-3xl p-10 shadow-xl"
         >
           {/* NAME */}
           <input
             required
             placeholder="Your Name"
-            className="w-full mb-5 px-5 py-4 rounded-xl bg-black border border-white/20 focus:border-[#e9b21a] outline-none"
+            className="w-full mb-5 px-5 py-4 rounded-xl bg-[#0f0f0f] border border-white/20 focus:border-[#e9b21a] outline-none"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
@@ -93,7 +94,7 @@ export default function Review() {
             required
             rows="4"
             placeholder="Write your experience..."
-            className="w-full mb-6 px-5 py-4 rounded-xl bg-black border border-white/20 focus:border-[#e9b21a] outline-none"
+            className="w-full mb-6 px-5 py-4 rounded-xl bg-[#0f0f0f] border border-white/20 focus:border-[#e9b21a] outline-none"
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
           />

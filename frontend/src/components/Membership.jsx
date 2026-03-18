@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const WHATSAPP_NUMBER = "917418804656"; // 91 + number (NO + sign)
+const WHATSAPP_NUMBER = "919943471321"; // 91 + number (NO + sign)
 const API_URL = "http://localhost:5001/membership";
 
 export default function Membership() {
@@ -81,6 +81,7 @@ export default function Membership() {
           <h2 className="text-4xl md:text-5xl font-bold">
             Membership <span className="text-[#e9b21a]">Plans</span>
           </h2>
+
           <p className="mt-6 text-gray-400">
             Membership pricing varies by location. Select your nearest branch.
           </p>
@@ -114,7 +115,7 @@ export default function Membership() {
             className="grid md:grid-cols-2 gap-10"
           >
             {/* MEMBERSHIPS */}
-            <div className="rounded-2xl border border-white/10 bg-black/60 backdrop-blur p-8">
+            <div className="rounded-2xl border border-white/10 bg-[#171717] shadow-lg p-8">
               <h3 className="text-2xl font-semibold mb-6">
                 Gym Memberships
               </h3>
@@ -127,6 +128,7 @@ export default function Membership() {
                       className="flex justify-between text-gray-300 border-b border-white/10 pb-3"
                     >
                       <span>{label}</span>
+
                       <span className="text-white font-medium">
                         {price}
                       </span>
@@ -137,7 +139,7 @@ export default function Membership() {
             </div>
 
             {/* ADDONS + CTA */}
-            <div className="rounded-2xl border border-white/10 bg-black/60 backdrop-blur p-8 flex flex-col">
+            <div className="rounded-2xl border border-white/10 bg-[#171717] shadow-lg p-8 flex flex-col">
               <h3 className="text-2xl font-semibold mb-6">
                 Add-On Services
               </h3>
@@ -150,6 +152,7 @@ export default function Membership() {
                       className="flex justify-between text-gray-300 border-b border-white/10 pb-3"
                     >
                       <span>{label}</span>
+
                       <span className="text-white font-medium">
                         {price}
                       </span>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import logo from "../assets/logo.jpg"; // ✅ correct path
+import logo from "../assets/logo.jpg";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -8,8 +8,10 @@ export default function Navbar() {
   const navigate = useNavigate();
 
   const navClass = (active) =>
-    `cursor-pointer transition ${
-      active ? "text-[#e9b21a]" : "text-white hover:text-[#e9b21a]"
+    `w-full text-left py-3 px-4 rounded-lg transition ${
+      active
+        ? "text-[#e9b21a] bg-white/5"
+        : "text-white hover:text-[#e9b21a] hover:bg-white/5"
     }`;
 
   const goToSection = (id) => {
@@ -39,26 +41,44 @@ export default function Navbar() {
         <ul className="hidden md:flex gap-8 text-sm font-medium">
           <li
             onClick={() => goToSection("hero")}
-            className={navClass(location.pathname === "/" && !location.hash)}
+            className={`cursor-pointer transition ${
+              location.pathname === "/" && !location.hash
+                ? "text-[#e9b21a]"
+                : "text-white hover:text-[#e9b21a]"
+            }`}
           >
             Home
           </li>
 
           <li
             onClick={() => goToSection("training-videos")}
-            className={navClass(
+            className={`cursor-pointer transition ${
               location.pathname === "/" &&
-                location.hash === "#training-videos"
-            )}
+              location.hash === "#training-videos"
+                ? "text-[#e9b21a]"
+                : "text-white hover:text-[#e9b21a]"
+            }`}
           >
             Videos
           </li>
 
-          <li className={navClass(location.pathname === "/gallery")}>
+          <li
+            className={`cursor-pointer transition ${
+              location.pathname === "/gallery"
+                ? "text-[#e9b21a]"
+                : "text-white hover:text-[#e9b21a]"
+            }`}
+          >
             <Link to="/gallery">Gallery</Link>
           </li>
 
-          <li className={navClass(location.pathname === "/testimonials")}>
+          <li
+            className={`cursor-pointer transition ${
+              location.pathname === "/testimonials"
+                ? "text-[#e9b21a]"
+                : "text-white hover:text-[#e9b21a]"
+            }`}
+          >
             <Link to="/testimonials">Testimonials</Link>
           </li>
         </ul>
@@ -74,30 +94,41 @@ export default function Navbar() {
 
       {/* MOBILE MENU */}
       {open && (
-        <div className="md:hidden bg-black border-t border-white/10 px-6 py-6 space-y-4">
-          <p onClick={() => goToSection("hero")} className={navClass(false)}>
-            Home
-          </p>
-          <p
-            onClick={() => goToSection("training-videos")}
-            className={navClass(false)}
-          >
-            Videos
-          </p>
-          <Link
-            to="/gallery"
-            onClick={() => setOpen(false)}
-            className={navClass(location.pathname === "/gallery")}
-          >
-            Gallery
-          </Link>
-          <Link
-            to="/testimonials"
-            onClick={() => setOpen(false)}
-            className={navClass(location.pathname === "/testimonials")}
-          >
-            Testimonials
-          </Link>
+        <div className="md:hidden bg-black border-t border-white/10 px-4 py-4">
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={() => goToSection("hero")}
+              className={navClass(location.pathname === "/" && !location.hash)}
+            >
+              Home
+            </button>
+
+            <button
+              onClick={() => goToSection("training-videos")}
+              className={navClass(
+                location.pathname === "/" &&
+                  location.hash === "#training-videos"
+              )}
+            >
+              Videos
+            </button>
+
+            <Link
+              to="/gallery"
+              onClick={() => setOpen(false)}
+              className={navClass(location.pathname === "/gallery")}
+            >
+              Gallery
+            </Link>
+
+            <Link
+              to="/testimonials"
+              onClick={() => setOpen(false)}
+              className={navClass(location.pathname === "/testimonials")}
+            >
+              Testimonials
+            </Link>
+          </div>
         </div>
       )}
     </nav>

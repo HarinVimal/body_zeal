@@ -1,25 +1,36 @@
 import { motion } from "framer-motion";
 
-const steps = [
+import crossfit from "../assets/5114235.png"; // ✅ NEW ICON
+import generative from "../assets/generative.png";
+import shower from "../assets/shower.png";
+import workout from "../assets/workout.png";
+import zumba from "../assets/zumba.png";
+
+const highlights = [
   {
-    title: "Initial Assessment",
-    desc: "We evaluate your current fitness levels to understand your starting point.",
+    title: "Outdoor CrossFit",
+    icon: crossfit, // ✅ FIXED
+    desc: "High-energy outdoor training designed to build strength, stamina and endurance.",
   },
   {
-    title: "Program Guidance",
-    desc: "Our trainers help select programs suited to your goals and capability.",
+    title: "AI Studio",
+    icon: generative,
+    desc: "Advanced AI powered workout guidance to track and improve your performance.",
   },
   {
-    title: "Trainer Support",
-    desc: "Ongoing supervision during workouts to ensure correct form and safety.",
+    title: "Steam & Shower",
+    icon: shower,
+    desc: "Relax and recover with modern steam and shower facilities after intense workouts.",
   },
   {
-    title: "Structured Routines",
-    desc: "Consistent, well-planned workouts focused on long-term results.",
+    title: "Personal Training",
+    icon: workout, // ✅ FIXED
+    desc: "Expert trainers providing personalized workout plans tailored to your goals.",
   },
   {
-    title: "Progress Monitoring",
-    desc: "Training plans adjusted based on progress and performance.",
+    title: "Zumba",
+    icon: zumba,
+    desc: "Fun dance-based fitness sessions that burn calories while keeping workouts exciting.",
   },
 ];
 
@@ -37,16 +48,17 @@ export default function WhatToExpect() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold">
-            Your <span className="text-[#e9b21a]">Training Journey</span>
+            Gym <span className="text-[#e9b21a]">Highlights</span>
           </h2>
+
           <p className="mt-4 text-gray-400">
-            What to expect when you join Bodyzeal Fitworks
+            Experience the best training environment at Bodyzeal Fitworks
           </p>
         </motion.div>
 
-        {/* Cards */}
-        <div className="grid md:grid-cols-5 gap-6">
-          {steps.map((step, i) => (
+        {/* Highlight Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+          {highlights.map((item, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 40 }}
@@ -54,14 +66,30 @@ export default function WhatToExpect() {
               transition={{ duration: 0.6, delay: i * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -10 }}
-              className="glass-card p-6 rounded-xl text-center"
+              className="bg-[#0f0f0f] border border-gray-800 rounded-2xl p-8 text-center transition hover:border-[#e9b21a] hover:shadow-[0_0_20px_rgba(233,178,26,0.4)]"
             >
-              <div className="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-full bg-[#e9b21a] text-black font-bold">
-                {i + 1}
+              
+              {/* Icon */}
+              <div className="flex justify-center mb-6">
+                <div className="w-20 h-20 flex items-center justify-center rounded-full bg-[#e9b21a] p-4">
+                  <img
+                    src={item.icon}
+                    alt={item.title}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </div>
 
-              <h3 className="font-semibold mb-2">{step.title}</h3>
-              <p className="text-sm text-gray-400">{step.desc}</p>
+              {/* Title */}
+              <h3 className="font-semibold text-lg text-white mb-2">
+                {item.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-sm text-gray-400">
+                {item.desc}
+              </p>
+
             </motion.div>
           ))}
         </div>
